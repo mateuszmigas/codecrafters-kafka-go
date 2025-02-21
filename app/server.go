@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
 	"net"
 	"os"
@@ -27,5 +28,13 @@ func main() {
 
 	buff := make([]byte, 1024)
 	conn.Read(buff)
-	conn.Write([]byte{0, 0, 0, 0, 0, 0, 7})
+
+	// Create response buffer
+	response := make([]byte, 8)
+	// First 4 bytes: message size (0)
+	binary.BigEndian.PutUint32(response[0:4], 0)
+	// Next 4 bytes: correlation ID (7)
+	binary.BigEndian.PutUint32(response[4:8], 7)
+
+	conn.Write(response)
 }
